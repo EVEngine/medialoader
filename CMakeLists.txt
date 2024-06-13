@@ -4,12 +4,19 @@ project(MediaLoader)
 
 set (CMAKE_CXX_STANDARD 11)
 
+include_directories(include image-libs/ sound-libs/ 
+	${CMAKE_CURRENT_BINARY_DIR}/sound-libs/mpg123/ports/cmake/src/
+	sound-libs/mpg123/src/
+	sound-libs/libogg/include/
+	sound-libs/libmodplug/src/
+	sound-libs/libvorbis/include/
+	sound-libs/mpg123/src/libmpg123/)
+
+add_subdirectory(sound-libs/libogg)
 add_subdirectory(sound-libs/libvorbis)
 add_subdirectory(sound-libs/mpg123/ports/cmake)
 add_subdirectory(sound-libs/libmodplug)
 
-
-include_directories(include image-libs/ sound-libs/ ${CMAKE_CURRENT_BINARY_DIR}/sound-libs/mpg123/ports/cmake/src/ sound-libs/mpg123/src/)
 
 file(GLOB image_src ${CMAKE_CURRENT_SOURCE_DIR}/image/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/image-libs/**/*.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/image-libs/**/*.cpp )

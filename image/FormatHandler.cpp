@@ -26,10 +26,12 @@ bool FormatHandler::canEncode(PixelFormat /*rawFormat*/, EncodedFormat /*encoded
 
 FormatHandler::DecodedImage FormatHandler::decode(const char* data, size_t size)
 {
+	return DecodedImage();
 }
 
 FormatHandler::EncodedImage FormatHandler::encode(const DecodedImage& /*img*/, EncodedFormat /*format*/)
 {
+	return EncodedImage();
 }
 
 bool FormatHandler::canParseCompressed(const char* data, size_t size)
@@ -39,6 +41,7 @@ bool FormatHandler::canParseCompressed(const char* data, size_t size)
 
 CompressedMemory* FormatHandler::parseCompressed(const char* data, size_t size, std::vector<CompressedSlice*>& /*images*/, PixelFormat& /*format*/, bool& /*sRGB*/)
 {
+	return nullptr;
 }
 
 void FormatHandler::freeRawPixels(unsigned char *mem)

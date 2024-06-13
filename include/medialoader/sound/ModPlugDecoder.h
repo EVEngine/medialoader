@@ -1,7 +1,7 @@
 #pragma once
 
 #include "medialoader/sound/Decoder.h"
-#include <libmodplug/modplug.h>
+#include <modplug.h>
 
 namespace medialoader {
 

@@ -31,7 +31,7 @@ namespace medialoader {
  * mpg123 callbacks for seekable streams.
  **/
 
-static ssize_t read_callback(void *udata, void *buffer, size_t count)
+static mpg123_ssize_t read_callback(void *udata, void *buffer, size_t count)
 {
 	DecoderFile *file = (DecoderFile *) udata;
 
