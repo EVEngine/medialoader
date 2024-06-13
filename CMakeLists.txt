@@ -12,10 +12,10 @@ include_directories(include image-libs/ sound-libs/
 	sound-libs/libvorbis/include/
 	sound-libs/mpg123/src/libmpg123/)
 
+add_subdirectory(sound-libs/libmodplug)
 add_subdirectory(sound-libs/libogg)
 add_subdirectory(sound-libs/libvorbis)
 add_subdirectory(sound-libs/mpg123/ports/cmake)
-add_subdirectory(sound-libs/libmodplug)
 
 
 file(GLOB image_src ${CMAKE_CURRENT_SOURCE_DIR}/image/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/image-libs/**/*.cpp

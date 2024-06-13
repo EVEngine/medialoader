@@ -51,7 +51,7 @@ if(UNIX)
 	include(CheckSymbolExists)
 	include(CheckTypeSize)
 
-	# check_function_exists(sinf HAVE_SINF)
+	check_function_exists(sinf HAVE_SINF)
 	check_function_exists(setenv HAVE_SETENV)
 
 	check_include_files(dlfcn.h HAVE_DLFCN_H)
