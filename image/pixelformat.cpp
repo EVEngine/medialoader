@@ -118,4 +118,73 @@ int getPixelFormatColorComponents(PixelFormat format)
 	}
 }
 
+PixelFormat getPixelFormatFromName(std::string name)
+{
+	if (name == "R8") return PIXELFORMAT_R8;
+	if (name == "RG8") return PIXELFORMAT_RG8;
+	if (name == "RGBA8") return PIXELFORMAT_RGBA8;
+	if (name == "sRGBA8") return PIXELFORMAT_sRGBA8;
+	if (name == "R16") return PIXELFORMAT_R16;
+	if (name == "RG16") return PIXELFORMAT_RG16;
+	if (name == "RGBA16") return PIXELFORMAT_RGBA16;
+	if (name == "R16F") return PIXELFORMAT_R16F;
+	if (name == "RG16F") return PIXELFORMAT_RG16F;
+	if (name == "RGBA16F") return PIXELFORMAT_RGBA16F;
+	if (name == "R32F") return PIXELFORMAT_R32F;
+	if (name == "RG32F") return PIXELFORMAT_RG32F;
+	if (name == "RGBA32F") return PIXELFORMAT_RGBA32F;
+	if (name == "LA8") return PIXELFORMAT_LA8;
+	if (name == "RGBA4") return PIXELFORMAT_RGBA4;
+	if (name == "RGB5A1") return PIXELFORMAT_RGB5A1;
+	if (name == "RGB565") return PIXELFORMAT_RGB565;
+	if (name == "RGB10A2") return PIXELFORMAT_RGB10A2;
+	if (name == "RG11B10F") return PIXELFORMAT_RG11B10F;
+	if (name == "STENCIL8") return PIXELFORMAT_STENCIL8;
+	if (name == "DEPTH16") return PIXELFORMAT_DEPTH16;
+	if (name == "DEPTH24") return PIXELFORMAT_DEPTH24;
+	if (name == "DEPTH32F") return PIXELFORMAT_DEPTH32F;
+	if (name == "DEPTH24_STENCIL8") return PIXELFORMAT_DEPTH24_STENCIL8;
+	if (name == "DEPTH32F_STENCIL8") return PIXELFORMAT_DEPTH32F_STENCIL8;
+	if (name == "DXT1") return PIXELFORMAT_DXT1;
+	if (name == "DXT3") return PIXELFORMAT_DXT3;
+	if (name == "DXT5") return PIXELFORMAT_DXT5;
+	if (name == "BC4") return PIXELFORMAT_BC4;
+	if (name == "BC4s") return PIXELFORMAT_BC4s;
+	if (name == "BC5") return PIXELFORMAT_BC5;
+	if (name == "BC5s") return PIXELFORMAT_BC5s;
+	if (name == "BC6H") return PIXELFORMAT_BC6H;
+	if (name == "BC6Hs") return PIXELFORMAT_BC6Hs;
+	if (name == "BC7") return PIXELFORMAT_BC7;
+	if (name == "PVR1_RGB2") return PIXELFORMAT_PVR1_RGB2;
+	if (name == "PVR1_RGB4") return PIXELFORMAT_PVR1_RGB4;
+	if (name == "PVR1_RGBA2") return PIXELFORMAT_PVR1_RGBA2;
+	if (name == "PVR1_RGBA4") return PIXELFORMAT_PVR1_RGBA4;
+	if (name == "ETC1") return PIXELFORMAT_ETC1;
+	if (name == "ETC2_RGB") return PIXELFORMAT_ETC2_RGB;
+	if (name == "ETC2_RGBA") return PIXELFORMAT_ETC2_RGBA;
+	if (name == "ETC2_RGBA1") return PIXELFORMAT_ETC2_RGBA1;
+	if (name == "EAC_R") return PIXELFORMAT_EAC_R;
+	if (name == "EAC_Rs") return PIXELFORMAT_EAC_Rs;
+	if (name == "EAC_RG") return PIXELFORMAT_EAC_RG;
+	if (name == "EAC_RGs") return PIXELFORMAT_EAC_RGs;
+	if (name == "ASTC_4x4") return PIXELFORMAT_ASTC_4x4;
+	if (name == "ASTC_5x4") return PIXELFORMAT_ASTC_5x4;
+	if (name == "ASTC_5x5") return PIXELFORMAT_ASTC_5x5;
+	if (name == "ASTC_6x5") return PIXELFORMAT_ASTC_6x5;
+	if (name == "ASTC_6x6") return PIXELFORMAT_ASTC_6x6;
+	if (name == "ASTC_8x5") return PIXELFORMAT_ASTC_8x5;
+	if (name == "ASTC_8x6") return PIXELFORMAT_ASTC_8x6;
+	if (name == "ASTC_8x8") return PIXELFORMAT_ASTC_8x8;
+	if (name == "ASTC_10x5") return PIXELFORMAT_ASTC_10x5;
+	if (name == "ASTC_10x6") return PIXELFORMAT_ASTC_10x6;
+	if (name == "ASTC_10x8") return PIXELFORMAT_ASTC_10x8;
+	if (name == "ASTC_10x10") return PIXELFORMAT_ASTC_10x10;
+	if (name == "ASTC_12x10") return PIXELFORMAT_ASTC_12x10;
+	if (name == "ASTC_12x12") return PIXELFORMAT_ASTC_12x12;
+
+	return PIXELFORMAT_UNKNOWN;
+}
+
+
+
 } // medialoader

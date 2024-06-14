@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <string>
 
 namespace medialoader
 {
@@ -135,5 +136,12 @@ int getPixelFormatSize(PixelFormat format);
  * Gets the number of color components in the given pixel format.
  **/
 int getPixelFormatColorComponents(PixelFormat format);
+
+
+/**
+ * Gets the pixel format from name.
+ **/
+PixelFormat getPixelFormatFromName(std::string name);
+
 
 } // medialoader
