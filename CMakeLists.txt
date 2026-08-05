@@ -59,9 +59,17 @@ set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+# Parent tree already provides zlib; building assimp's copy conflicts (duplicate zlib target).
+set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
 # Keep medialoader's shared-libs policy; force static assimp for this subdir.
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(model-libs/assimp)
+# Parent install tree may expose an older utf8.hpp that triggers C4996 under /WX.
+if(TARGET assimp)
+	target_compile_definitions(assimp PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
+	# Drop MSVC toolset infix (assimp-vc145-mt) so consumers can link "assimp".
+	set_target_properties(assimp PROPERTIES OUTPUT_NAME "assimp")
+endif()
 
 set(model_src
 	${CMAKE_CURRENT_SOURCE_DIR}/model/StdFileSystem.cpp
@@ -80,6 +88,16 @@ target_link_libraries(medialoader_model PUBLIC assimp)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/medialoader/model
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/medialoader/ COMPONENT Development)
 install(TARGETS medialoader_model DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
+
+# ASSIMP_INSTALL is OFF (avoids full assimp package install); still ship lib + headers for consumers.
+install(TARGETS assimp DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/model-libs/assimp/include/assimp
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ COMPONENT Development
+	PATTERN "*.in" EXCLUDE)
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/model-libs/assimp/include/assimp/config.h)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/model-libs/assimp/include/assimp/config.h
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/assimp/ COMPONENT Development)
+endif()
 
 add_executable(medialoader_model_test model/tests/model_loader_test.cpp)
 target_link_libraries(medialoader_model_test PRIVATE medialoader_model)
