@@ -374,7 +374,9 @@ if(BUILD_LIBOUT123)
 endif()
 add_subdirectory("libsyn123")
 
-if(UNIX)
+# Host CLI tools/tests: skip on iOS/Android where executables are app bundles
+# and install(TARGETS ... RUNTIME) fails without BUNDLE DESTINATION.
+if(UNIX AND NOT ANDROID AND NOT (CMAKE_SYSTEM_NAME STREQUAL "iOS"))
     add_subdirectory("tests")
 
     if(BUILD_LIBOUT123)
