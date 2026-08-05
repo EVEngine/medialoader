@@ -17,11 +17,19 @@ medialoader 是从love中提取出来的可以读取各种格式文件的库，�
 - mp3
 - wav
 
+## model（assimp）
+
+通过 vendored Assimp（`model-libs/assimp`）读取 3D 模型，CMake 目标：`medialoader_model`。
+
+- `FileSystem` / `StdFileSystem`：可插拔 IO（支持 seek）；默认 C `FILE*`
+- `ModelLoader::loadFromPath` / `loadFromMemory`：经 Assimp `IOSystem` 读入
+- 返回 `ModelScene`（RAII，内部持有 `Assimp::Importer`），通过 `const aiScene*` 使用原生 Assimp 场景结构
+- 头文件：`include/medialoader/model/`
+
+本地测试：配置后构建并运行 `medialoader_model_test`。
+
 ## 计划实现的其他资源
 
-1. 提供3d模型的整合读取，assimp库的接入
-2. 提供视频的读取
+1. 提供视频的读取
 
-这两种较大格式往往涉及到文件系统的抽象，因为其文件大小较大，往往需要实现文件指针跳跃的交互式读取。
-这里可以提供一个文件系统接口，并提供一个普通的C文件的读取实现，如果用户需要从其他地方读取，那么可以自行实现并接入该接口。
-
+大资源往往需要可 seek 的文件系统抽象；模型侧已提供 `FileSystem` 接口，视频可复用同一套思路。

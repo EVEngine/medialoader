@@ -52,3 +52,34 @@ target_link_libraries(medialoader_sound modplug-static ogg-static vorbis-static 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ COMPONENT Development)
 
 install(TARGETS medialoader_image medialoader_sound DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
+
+# --- model (assimp) ---
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+# Keep medialoader's shared-libs policy; force static assimp for this subdir.
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+add_subdirectory(model-libs/assimp)
+
+set(model_src
+	${CMAKE_CURRENT_SOURCE_DIR}/model/StdFileSystem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/model/ModelScene.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/model/AssimpIO.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/model/ModelLoader.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/image/Exception.cpp
+)
+add_library(medialoader_model ${model_src})
+target_include_directories(medialoader_model
+	PUBLIC
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(medialoader_model PUBLIC assimp)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/medialoader/model
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/medialoader/ COMPONENT Development)
+install(TARGETS medialoader_model DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
+
+add_executable(medialoader_model_test model/tests/model_loader_test.cpp)
+target_link_libraries(medialoader_model_test PRIVATE medialoader_model)
