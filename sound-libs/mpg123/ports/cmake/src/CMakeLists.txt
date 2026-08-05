@@ -185,8 +185,9 @@ if(NO_MESSAGES)
     set(NO_ERETURN ON)
 endif()
 
-if(WIN32 OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    # Host HAS_FPU is meaningless when cross-compiling; aarch64/arm Android always has FPU.
+if(WIN32 OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")
+        OR IOS OR (CMAKE_SYSTEM_NAME STREQUAL "iOS"))
+    # Host HAS_FPU is meaningless when cross-compiling; arm64 iOS/Android always has FPU.
     set(HAVE_FPU 1)
 else()
     cmake_host_system_information(RESULT HAVE_FPU QUERY HAS_FPU)
