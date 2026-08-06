@@ -68,9 +68,12 @@ typedef UWORD WORD;
 
 // 128 gm and 63 drum
 #define MAXSMP				191
-static char midipat[MAXSMP][128];
-static char pathforpat[128];
-static char timiditycfg[128];
+// libmodplug historically used 128-byte path buffers; FreePats names + long
+// install prefixes overflow and trip stack canaries in PAT_Load_Instruments.
+#define PAT_PATH_MAX			512
+static char midipat[MAXSMP][PAT_PATH_MAX];
+static char pathforpat[PAT_PATH_MAX];
+static char timiditycfg[PAT_PATH_MAX];
 
 #pragma pack(1)
 
@@ -128,6 +131,8 @@ typedef struct {
 	DWORD scale_factor;
 	char reserved[32];
 } WaveHeader;
+
+#pragma pack()
 
 // WaveHeader.modes bits
 #define PAT_16BIT     1
@@ -424,21 +429,21 @@ void pat_init_patnames(void)
 				if( *p && i < MAXSMP && i >= 0 && *p != '#' ) {
 					q = isdrumset ? midipat[pat_gm_drumnr(i)-1] : midipat[i];
 					pfnlen = 0;
-					while( *p && !isspace(*p) && *p != '#' && pfnlen < 128 ) {
+					while( *p && !isspace(*p) && *p != '#' && pfnlen < PAT_PATH_MAX - 1 ) {
 						pfnlen ++;
 						*q++ = *p++;
 					}
-					if( isblank(*p) && *(p+1) != '#' && pfnlen < 128 ) {
+					if( isblank(*p) && *(p+1) != '#' && pfnlen < PAT_PATH_MAX - 1 ) {
 						*q++ = ':'; pfnlen ++;
 						while( isspace(*p) ) {
 							while( isspace(*p) ) p++;
 							if ( *p == '#' ) { // comment
 
-							} else while( *p && !isspace(*p) && pfnlen < 128 ) {
+							} else while( *p && !isspace(*p) && pfnlen < PAT_PATH_MAX - 1 ) {
 								pfnlen ++;
 								*q++ = *p++;
 							}
-							if( isspace(*p) ) { *q++ = ' '; pfnlen++; }
+							if( isspace(*p) && pfnlen < PAT_PATH_MAX - 1 ) { *q++ = ' '; pfnlen++; }
 						}
 					}
 					*q++ = '\0';
@@ -450,7 +455,7 @@ void pat_init_patnames(void)
 				p = &line[7];
 				while ( isspace(*p) ) p ++;
 				pfnlen = 0;
-				while ( *p && *p != '#' && !isspace(*p) && pfnlen < 128 ) {
+				while ( *p && *p != '#' && !isspace(*p) && pfnlen < PATH_MAX - 1 ) {
 					pfnlen ++;
 					*q++ = *p++;
 				}
@@ -491,11 +496,14 @@ static char *pat_build_path(char *fname, int pat)
 	if ( isabspath ) patfile ++;
 	ps = strrchr(patfile, ':');
 	if( ps ) {
-		sprintf(fname, "%s%c%s", isabspath ? "" : pathforpat, DIRDELIM, patfile);
-		strcpy(strrchr(fname, ':'), ".pat");
+		snprintf(fname, PAT_PATH_MAX, "%s%c%s", isabspath ? "" : pathforpat, DIRDELIM, patfile);
+		{
+			char *colon = strrchr(fname, ':');
+			if (colon) strcpy(colon, ".pat");
+		}
 		return ps;
 	}
-	sprintf(fname, "%s%c%s.pat", isabspath ? "" : pathforpat, DIRDELIM, patfile);
+	snprintf(fname, PAT_PATH_MAX, "%s%c%s.pat", isabspath ? "" : pathforpat, DIRDELIM, patfile);
 	return 0;
 }
 
@@ -563,7 +571,7 @@ static void pat_read_waveheader(MMSTREAM *mmpat, WaveHeader *hw, int layer)
 		}
 	}
 	_mm_read_UBYTES((BYTE *)hw, sizeof(WaveHeader), mmpat);
-	strncpy(hw->reserved, hl.reserved, 36);
+	strncpy(hw->reserved, hl.reserved, sizeof(hw->reserved));
 	if( hw->start_loop >= hw->wave_size ) {
 		hw->start_loop = 0;
 		hw->end_loop = 0;
@@ -625,7 +633,7 @@ static void pat_get_waveheader(MMFILE *mmpat, WaveHeader *hw, int layer)
 
 static int pat_readpat_attr(int pat, WaveHeader *hw, int layer)
 {
-	char fname[128];
+	char fname[PAT_PATH_MAX];
 	int fsize;
 	MMSTREAM *mmpat;
 	pat_build_path(fname, pat);
@@ -706,7 +714,7 @@ static void pat_readpat(int pat, char *dest, int num)
 	static MMSTREAM *mmpat = 0;
 	static char *opt = 0;
 	int amp;
-	char fname[128];
+	char fname[PAT_PATH_MAX];
 	WaveHeader hw;
 #ifdef NEWMIKMOD
 	static int patlast = MAXSMP;
