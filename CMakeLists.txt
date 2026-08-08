@@ -64,7 +64,23 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 # Parent tree already provides zlib; building assimp's copy conflicts (duplicate zlib target).
-set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
+# Assimp's cmake-modules/FindZLIB only searches system prefixes (ZLIB_HOME), not sibling
+# CMake targets. macOS/Linux usually have system zlib so configure succeeds; Windows CI
+# typically does not. When parent already built zlibstatic, mark ZLIB found and bind it.
+if(TARGET zlibstatic)
+	set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
+	message(STATUS "medialoader: assimp will use parent zlibstatic (no system zlib required)")
+	set(ZLIB_FOUND TRUE)
+	set(ZLIB_LIBRARY zlibstatic)
+	set(ZLIB_LIBRARIES zlibstatic)
+	# Source tree has zlib.h; build tree has generated zconf.h.
+	set(ZLIB_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/zlib" "${CMAKE_BINARY_DIR}/zlib")
+	# Help Assimp's FindZLIB rediscover headers if it clears the cache vars.
+	list(PREPEND CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/zlib" "${CMAKE_BINARY_DIR}/zlib")
+else()
+	# Standalone medialoader: leave Assimp defaults (ON on Windows, OFF elsewhere).
+	message(STATUS "medialoader: no parent zlibstatic; leaving ASSIMP_BUILD_ZLIB to Assimp defaults")
+endif()
 # Keep medialoader's shared-libs policy; force static assimp for this subdir.
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(model-libs/assimp)
@@ -73,6 +89,10 @@ if(TARGET assimp)
 	target_compile_definitions(assimp PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 	# Drop MSVC toolset infix (assimp-vc145-mt) so consumers can link "assimp".
 	set_target_properties(assimp PROPERTIES OUTPUT_NAME "assimp")
+	# Ensure link/includes survive Assimp's FindZLIB cache clearing on Windows.
+	if(TARGET zlibstatic)
+		target_link_libraries(assimp PUBLIC zlibstatic)
+	endif()
 endif()
 
 set(model_src
