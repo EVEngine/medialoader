@@ -89,10 +89,8 @@ if(TARGET assimp)
 	target_compile_definitions(assimp PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 	# Drop MSVC toolset infix (assimp-vc145-mt) so consumers can link "assimp".
 	set_target_properties(assimp PROPERTIES OUTPUT_NAME "assimp")
-	# Ensure link/includes survive Assimp's FindZLIB cache clearing on Windows.
-	if(TARGET zlibstatic)
-		target_link_libraries(assimp PUBLIC zlibstatic)
-	endif()
+	# Assimp already links ${ZLIB_LIBRARIES} (plain signature). Do not call
+	# target_link_libraries(assimp PUBLIC ...) here — keyword/plain mix is an error.
 endif()
 
 set(model_src
