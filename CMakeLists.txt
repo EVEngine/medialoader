@@ -57,6 +57,28 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTA
 
 install(TARGETS medialoader_image medialoader_sound DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
 
+# The installed medialoader/sound/*.h public headers depend on a few sound-lib
+# headers that live outside include/. Ship them into the install tree so that
+# consumers can build against the install prefix alone (no source checkout).
+install(FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/Wuff/wuff.h
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/Wuff/wuff_config.h
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/Wuff/wuff_convert.h
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/Wuff/wuff_internal.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Wuff/ COMPONENT Development)
+install(FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/libmodplug/src/modplug.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ COMPONENT Development)
+install(FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/dr_flac/dr_flac.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dr_flac/ COMPONENT Development)
+# VorbisDecoder.h pulls in <vorbis/codec.h> -> <ogg/ogg.h>. libogg's CMake
+# installs only the library, not its public headers, so ship them here too.
+install(FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/libogg/include/ogg/ogg.h
+	${CMAKE_CURRENT_SOURCE_DIR}/sound-libs/libogg/include/ogg/os_types.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ogg/ COMPONENT Development)
+
 # --- model (assimp) ---
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
