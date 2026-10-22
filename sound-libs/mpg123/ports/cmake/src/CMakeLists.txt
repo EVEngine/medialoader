@@ -185,7 +185,9 @@ if(NO_MESSAGES)
     set(NO_ERETURN ON)
 endif()
 
-if(WIN32 OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")
+# AArch64 has floating-point support; host HAS_FPU can report false on Linux ARM64.
+if((CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|ARM64)$")
+        OR WIN32 OR ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")
         OR IOS OR (CMAKE_SYSTEM_NAME STREQUAL "iOS"))
     # Host HAS_FPU is meaningless when cross-compiling; arm64 iOS/Android always has FPU.
     set(HAVE_FPU 1)
